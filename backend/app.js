@@ -34,6 +34,7 @@ class firebaseAdmin {
     }
 
     storeData(data) {
+        data.soilMoisture = 1023 - data.soilMoisture;
         this.docRef.set(data);
     }
 
