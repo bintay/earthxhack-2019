@@ -4,6 +4,14 @@ const port = 3000
 const admin = require("firebase-admin");
 const serviceAccount = require("./assets/serviceAccountKey.json");
 
+const SerialPort = require('serialport');
+const Readline = require('@serialport/parser-readline')
+var serialPort = new SerialPort("/dev/cu.usbmodem144201", {
+  baudRate: 9600
+});
+const parser = new Readline()
+serialPort.pipe(parser);
+
 class firebaseAdmin {
     constructor(credentials) {
         this.credentials = credentials;
@@ -26,11 +34,7 @@ class firebaseAdmin {
     }
 
     storeData(data) {
-        this.docRef.set({
-            soilMoisture: 5,
-            waterLevel: 6,
-            isConserving: true
-        });
+        this.docRef.set(data);
     }
 
     // Testing Methods
@@ -59,8 +63,21 @@ fb.init();
 // fb.testData();
 fb.initReference();
 
-var arduinoData = {};
-fb.storeData(arduinoData)
+serialPort.on("open", function () {
+  console.log('Serial communication open');
+});
+
+parser.on('data', line => {
+   let values = JSON.parse(line);
+   let data = {
+      waterLevel: values[0],
+      soilMoisture: values[1],
+      servoPosition: values[2],
+      isConserving: values[2] < 75
+   }
+   fb.storeData(data);
+   console.log("> " + line);
+});
 
 app.get('/', (req, res) => res.send('Arduino data collection server is running!'))
 
