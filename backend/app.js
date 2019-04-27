@@ -18,6 +18,8 @@ class firebaseAdmin {
         this.db = null;
         this.docRef = null;
         this.testDocRef = null;
+        this.counter = 0;
+        this.waterLevelLog = [];
     }
 
     init() {
@@ -34,6 +36,20 @@ class firebaseAdmin {
     }
 
     storeData(data) {
+        this.counter++;
+        if (this.counter = 1000) {
+            this.counter = 0;
+        }
+        if (this.counter / 5) {
+            if (this.waterLevelLog.length < 10) {
+                this.waterLevelLog.push(data.waterLevel);
+            } else {
+                this.waterLevelLog.shift();
+                this.waterLevelLog.push(data.waterLevel);    
+            }
+        }
+        data.waterLevelLog = this.waterLevelLog;
+        data.timestamp = new Date();
         data.soilMoisture = 1023 - data.soilMoisture;
         this.docRef.set(data);
     }
