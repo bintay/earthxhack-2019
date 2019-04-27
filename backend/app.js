@@ -36,11 +36,9 @@ class firebaseAdmin {
     }
 
     storeData(data) {
-        this.counter++;
-        if (this.counter = 1000) {
-            this.counter = 0;
-        }
-        if (this.counter / 5) {
+        this.counter = this.counter + 1;
+        if (this.counter = 1000) { this.counter = 0; }
+        if (this.counter % 5 === 0) {
             if (this.waterLevelLog.length < 10) {
                 this.waterLevelLog.push(data.waterLevel);
             } else {
