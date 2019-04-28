@@ -47,7 +47,7 @@ class firebaseAdmin {
             }
         }
         data.waterLevelLog = this.waterLevelLog;
-        data.timestamp = new Date();
+        data.timestamp = new Date().toString();
         data.soilMoisture = 1023 - data.soilMoisture;
         this.docRef.set(data);
     }
